@@ -1,7 +1,34 @@
 import java.util.*;
 
+/**
+ * Класс для разбора арифметических выражений и вычисления их значения.
+ * <p>
+ * Поддерживаются:
+ * <ul>
+ *     <li>Числа (целые и дробные)</li>
+ *     <li>Операции: +, -, *, /</li>
+ *     <li>Скобки</li>
+ *     <li>Переменные (например: x, y, var1)</li>
+ * </ul>
+ * <p>
+ * Алгоритм работы:
+ * <ol>
+ *     <li>Разбиение строки на токены</li>
+ *     <li>Преобразование в обратную польскую запись (RPN)</li>
+ *     <li>Вычисление результата через стек</li>
+ * </ol>
+ */
 public class ExpressionEvaluator {
 
+    /**
+     * Вычисляет значение выражения.
+     *
+     * @param expression строка с выражением
+     * @param variables  значения переменных (может быть null, если переменных нет)
+     * @return результат вычисления
+     * @throws IllegalArgumentException если выражение некорректно
+     * @throws ArithmeticException      при делении на ноль
+     */
     public double evaluate(String expression, Map<String, Double> variables) {
         if (expression == null || expression.isBlank()) {
             throw new IllegalArgumentException("Пустое выражение");
@@ -12,6 +39,13 @@ public class ExpressionEvaluator {
         return evaluateRpn(rpn, variables == null ? Collections.emptyMap() : variables);
     }
 
+    /**
+     * Извлекает все переменные из выражения.
+     *
+     * @param expression выражение
+     * @return множество уникальных переменных в порядке их появления
+     * @throws IllegalArgumentException если expression == null
+     */
     public Set<String> extractVariables(String expression) {
         if (expression == null) {
             throw new IllegalArgumentException("Выражение равно null");
@@ -26,6 +60,9 @@ public class ExpressionEvaluator {
         return variables;
     }
 
+    /**
+     * Разбивает выражение на токены (числа, переменные, операторы, скобки).
+     */
     private List<String> tokenize(String expression) {
         List<String> tokens = new ArrayList<>();
         int i = 0;
@@ -94,6 +131,10 @@ public class ExpressionEvaluator {
         return tokens;
     }
 
+    /**
+     * Преобразует список токенов в обратную польскую запись (RPN)
+     * с использованием алгоритма сортировочной станции.
+     */
     private List<String> toRpn(List<String> tokens) {
         List<String> output = new ArrayList<>();
         Deque<String> operators = new ArrayDeque<>();
@@ -151,6 +192,9 @@ public class ExpressionEvaluator {
         return output;
     }
 
+    /**
+     * Вычисляет значение выражения в обратной польской записи.
+     */
     private double evaluateRpn(List<String> rpn, Map<String, Double> variables) {
         Deque<Double> stack = new ArrayDeque<>();
 
@@ -193,22 +237,27 @@ public class ExpressionEvaluator {
         return stack.pop();
     }
 
+    /** Проверяет, является ли токен числом */
     private boolean isNumber(String token) {
         return token.matches("\\d+(\\.\\d+)?|\\.\\d+");
     }
 
+    /** Проверяет, является ли токен переменной */
     private boolean isVariable(String token) {
         return token.matches("[a-zA-Z][a-zA-Z0-9_]*");
     }
 
+    /** Проверяет, является ли токен оператором */
     private boolean isOperator(String token) {
         return "+-*/".contains(token) && token.length() == 1;
     }
 
+    /** Проверяет, является ли символ оператором */
     private boolean isOperatorChar(char ch) {
         return ch == '+' || ch == '-' || ch == '*' || ch == '/';
     }
 
+    /** Возвращает приоритет оператора */
     private int precedence(String operator) {
         return switch (operator) {
             case "+", "-" -> 1;
