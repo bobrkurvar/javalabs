@@ -77,6 +77,21 @@ public class CollectionBenchmark {
         printResult("remove(0) [с начала]", listName, end - start);
     }
 
+    // Тест перебора всех элементов
+    private void testIteration(List<Integer> list, String listName) {
+        long start = System.nanoTime();
+
+        long dummySum = 0; // Искусственная нагрузка, чтобы компилятор не "вырезал" цикл
+
+        // Используем цикл for-each (под капотом он использует Iterator коллекции)
+        for (Integer element : list) {
+            dummySum += element;
+        }
+
+        long end = System.nanoTime();
+        printResult("Итерация (for-each)", listName, end - start);
+    }
+
     private void fillList(List<Integer> list) {
         list.clear();
         for (int i = 0; i < iterations; i++) {
